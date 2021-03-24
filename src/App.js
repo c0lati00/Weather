@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react'
+
+import Weather from './Weather';
+import Position from './Position';
 import './App.css';
 
-function App() {
+const App = () => {
+
+  const [lat, setLat] = useState();
+  const [lon, setLon] = useState();
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+
+    // GeoLocation
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        setLat(Number(position.coords.latitude));
+        setLon(Number(position.coords.longitude));
+      }, (error) => {
+        alert(error);
+        setError(true);
+      }
+      )
+    } else {
+
+      setError(true);
+      alert("Your browser sdoes not support geolocation");
+    }
+  }, [lat, lon]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      { !error &&
+        <div className="toCenter">
+          <Position lat={Number(lat).toFixed(3)} lon={Number(lon).toFixed(3)} />
+          <Weather lat={lat} lon={lon} />
+        </div>
+      }
+    </>
+
   );
 }
-
 export default App;
